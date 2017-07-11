@@ -1,97 +1,73 @@
-# Authentication BoilerPlate
+# Novatore Authentication Boilerplate
 
-The Authentication Boilerplate is a Node.js sample app for those who want to do Basic Authentication with "Twitter, Facebook, LinkedIn, Google" with Passport.Js.
-The Certain portion/logics of this app is developed according to project "Contribute dot cloud", you can also add your custom logic according to your requirement.
+Novatore Authentication Boilerplate is a Node.js (sample) app to perform authentication with **Twitter**, **Facebook**, **LinkedIn**, **Google** using [passport](http://passportjs.org/).
 
-#### Current implementation includes:
+Most of the code is related to **Contribute dot cloud** application.
 
-1. Login page UI with SignIn Rest API
-2. Sign up page UI with SignUp Rest Api ( Two Roles : Student or Teacher)
-3. Confirmation Email to User when signIn using SendGrid's 'Node Mailer'. (Use you own Node mailer key).
-4. Redirect to respective page after login depending on their role.
-5. Front-end proper routes defined.
+## Features Included In Current Implementation
 
-
-#### Authentication with social website. (Official Website: http://passportjs.org/)
-
-1. Login with Facebook using passport.Js
-2. Login with Twitter using passport.Js
-3. Login with Google using passport.Js
-4. Login with LinkedIn using passport.Js
-
-#### Example:
+1. Signin UI with signin API
+2. Signup UI with signup API (with two roles: student and teacher)
+3. Confirmation email to user when signing up using [Node Mailer](https://www.npmjs.com/package/nodemailer) (Use you own key)
+4. Role-based redirecton to different views after successful signin
 
 
-    #### Create a facebook app and copy app-secret, app id and paste in auth.js file .Set the callback URL in your app.
+## Main Libraries For Authentication
 
-     'facebookAuth' : {
-             'clientID'      : 'FACEBOOK_APP_ID', // your App ID
-             'clientSecret'  : 'FACEBOOK_APP_SECRET', // your App Secret
-             'callbackURL'       : 'http://www.example.com/auth/facebook/callback'
-        },
+1. [Passport](https://www.npmjs.com/package/passport)
+2. [Passport Facebook](https://www.npmjs.com/package/passport-facebook)
+3. [Passport Twitter](https://www.npmjs.com/package/passport-twitter)
+4. [Passport Google](https://www.npmjs.com/package/passport-google-oauth)
+5. [Passport LinkedIn](https://www.npmjs.com/package/passport-linkedin)
 
-    #### Hit that route from front-end like "<a href="/auth/facebook">Login with Facebook</a>"
+## Implementation Example With Instructions(Facebook):
 
-    --> app.get('/auth/facebook', passport.authenticate('facebook'));
+1. Create a facebook app from developers console. Copy app-secret, app id and paste in auth.js file. Also set the callback URL in your  facebook app
 
-    #### Other logics are defined in passport.js file.
+       //auth.js
+       'facebookAuth' : {
+               'clientID'      : 'FACEBOOK_APP_ID', // your App ID
+               'clientSecret'  : 'FACEBOOK_APP_SECRET', // your App Secret
+               'callbackURL'   : 'http://www.example.com/auth/facebook/callback'
+        }
+        
+2. Hit that route from front-end like `<a href="/auth/facebook">Login with Facebook</a>`
 
-    #### Callback url that hit by facbook:
-
-    --> app.get('/auth/facebook/callback',
-          passport.authenticate('facebook'));
-
-    #### In Passport.JS
-
-    var configAuth = require('./auth');
-    var FacebookStrategy = require('passport-facebook').Strategy;
-
-
-     passport.use(new FacebookStrategy({
-         clientID: configAuth.facebookAuth.clientID,
-         clientSecret: configAuth.facebookAuth.clientSecret,
-         callbackURL: configAuth.facebookAuth.callbackURL,
-       },
-       function(accessToken, refreshToken, profile, done) {
-         User.findOrCreate(..., function(err, user) {
-           if (err) { return done(err); }
-           done(null, user);
-         });
-       }
-     ));
+    `app.get('/auth/facebook', passport.authenticate('facebook'));`
 
 
-#### Same case for other social website.
+3. Url that is called by Facebook upon successful authentication
 
-We are getting email from both facebook and google till now ,not from twitter and likedin , if any website is not returning email,in that case we can get it from user on a boarding-page.
-
-
-#### Install and run Mongodb , Node, and NPM (Use your own mongo db link in server.JS)
+    `app.get('/auth/facebook/callback', passport.authenticate('facebook'));`
 
 
-
-#### Install node modules
-make install or npm install
-
-#### Run the app
-node app.js --config contribute-dot-cloud.json
+4. Code in `passport.js`
 
 
+       var configAuth = require('./auth');
+       var FacebookStrategy = require('passport-facebook').Strategy;
+       passport.use(new FacebookStrategy({
+           clientID: configAuth.facebookAuth.clientID,
+           clientSecret: configAuth.facebookAuth.clientSecret,
+           callbackURL: configAuth.facebookAuth.callbackURL,
+          },
+         function(accessToken, refreshToken, profile, done) {
+           User.findOrCreate(..., function(err, user) {
+            if (err) { return done(err); }
+             done(null, user);
+            });
+          }
+        ));
 
 
+5. Follow a similar process for other social networks
+
+**Note:** Email may or may not be recieved from a social network depending on its availability or the user's privacy settings.
 
 
-#### Run all tests
-    $ grunt test         
+## How to Run (prerequisites: mongodb, node and npm)
 
-#### Generate both JSON & HTML reports
-    $ grunt unit_test_coverage_report
-
-#### Generate JSON report only
-     $ grunt json_report
-
-#### Generate HTML report only
-    $ grunt html_report
-
-#### Log files path must exist in your local system.
-    /var/log/contribute-dot-cloud
+1. Run Mongodb (mongo url can be changed from server.js)
+2. Install node modules `npm install`
+3. Create log file `contribute-dot-cloud` in your local system like `/var/log/contribute-dot-cloud.log`
+4. Run the app by passing configuration file `node app.js --config contribute-dot-cloud.json`
